@@ -1,23 +1,37 @@
 <template>
   <div class="home">
     <section class="hero">
-      <h1>Welcome to My Blog</h1>
-      <p>A place to share thoughts, ideas, and experiences</p>
+      <div class="container">
+        <h1>Engineering at Scale</h1>
+        <p class="subtitle">Insights, stories, and technical deep-dives from our engineering teams</p>
+      </div>
     </section>
 
     <section class="featured-posts">
-      <h2>Featured Posts</h2>
-      <div class="posts-grid" v-if="!loading">
-        <div v-for="post in posts" :key="post.id" class="post-card">
-          <h3>{{ post.title }}</h3>
-          <p>{{ post.excerpt }}</p>
-          <router-link :to="'/blog/' + post.id" class="read-more">
-            Read More
-          </router-link>
+      <div class="container">
+        <h2>Latest Articles</h2>
+        <div class="posts-grid" v-if="!loading">
+          <article v-for="post in posts" :key="post.id" class="post-card">
+            <div class="post-image" v-if="post.image">
+              <img :src="post.image" :alt="post.title">
+            </div>
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="category">{{ post.category }}</span>
+                <span class="date">{{ formatDate(post.date) }}</span>
+              </div>
+              <h3>{{ post.title }}</h3>
+              <p>{{ post.excerpt }}</p>
+              <router-link :to="'/blog/' + post.id" class="read-more">
+                Read Article
+                <span class="arrow">→</span>
+              </router-link>
+            </div>
+          </article>
         </div>
-      </div>
-      <div v-else class="loading">
-        Loading posts...
+        <div v-else class="loading">
+          Loading articles...
+        </div>
       </div>
     </section>
   </div>
@@ -35,7 +49,14 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['fetchPosts'])
+    ...mapActions(['fetchPosts']),
+    formatDate(date) {
+      return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      })
+    }
   },
   created() {
     this.fetchPosts()
@@ -46,63 +67,115 @@ export default {
 <style lang="scss" scoped>
 .home {
   .hero {
+    background-color: $background-color;
+    padding: $spacing-xxl 0;
     text-align: center;
-    padding: 4rem 0;
-    background-color: #f8f9fa;
-    margin-bottom: 3rem;
+    border-bottom: $border-width solid $border-color;
 
     h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      color: #333;
+      font-family: $font-family-heading;
+      font-size: $font-size-h1;
+      font-weight: 700;
+      line-height: $line-height-heading;
+      margin-bottom: $spacing-md;
+      color: $text-color;
     }
 
-    p {
-      font-size: 1.2rem;
-      color: #666;
+    .subtitle {
+      font-size: $font-size-h4;
+      color: $text-secondary;
+      max-width: 600px;
+      margin: 0 auto;
     }
   }
 
   .featured-posts {
+    padding: $spacing-xxl 0;
+
     h2 {
-      margin-bottom: 2rem;
-      text-align: center;
+      font-family: $font-family-heading;
+      font-size: $font-size-h2;
+      font-weight: 700;
+      margin-bottom: $spacing-xl;
+      color: $text-color;
     }
 
     .posts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: $spacing-xl;
     }
 
     .post-card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 1.5rem;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s;
+      background: $background-color;
+      border: $border-width solid $border-color;
+      transition: $transition-base;
 
       &:hover {
-        transform: translateY(-5px);
+        border-color: $text-color;
       }
 
-      h3 {
-        margin-bottom: 1rem;
-        color: #333;
+      .post-image {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
       }
 
-      p {
-        color: #666;
-        margin-bottom: 1rem;
-      }
+      .post-content {
+        padding: $spacing-lg;
 
-      .read-more {
-        color: #007bff;
-        text-decoration: none;
-        font-weight: 500;
+        .post-meta {
+          display: flex;
+          gap: $spacing-md;
+          margin-bottom: $spacing-sm;
+          font-size: 14px;
+          color: $text-secondary;
 
-        &:hover {
-          text-decoration: underline;
+          .category {
+            font-weight: 600;
+          }
+        }
+
+        h3 {
+          font-family: $font-family-heading;
+          font-size: $font-size-h3;
+          font-weight: 600;
+          line-height: $line-height-heading;
+          margin-bottom: $spacing-sm;
+          color: $text-color;
+        }
+
+        p {
+          color: $text-secondary;
+          margin-bottom: $spacing-md;
+          line-height: $line-height-base;
+        }
+
+        .read-more {
+          display: inline-flex;
+          align-items: center;
+          gap: $spacing-xs;
+          color: $text-color;
+          text-decoration: none;
+          font-weight: 600;
+          transition: $transition-base;
+
+          .arrow {
+            transition: transform 0.2s ease;
+          }
+
+          &:hover {
+            color: $text-secondary;
+            .arrow {
+              transform: translateX(4px);
+            }
+          }
         }
       }
     }
@@ -110,8 +183,8 @@ export default {
 
   .loading {
     text-align: center;
-    padding: 2rem;
-    color: #666;
+    padding: $spacing-xl;
+    color: $text-secondary;
   }
 }
 </style> 
