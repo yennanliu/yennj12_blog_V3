@@ -6,6 +6,10 @@
         <p class="subtitle">Explore our latest engineering insights and technical deep-dives</p>
       </header>
 
+      <div class="actions-bar">
+        <button @click="downloadPosts" class="download-button">Download All Posts (JSON)</button>
+      </div>
+
       <div class="filters">
         <div class="search">
           <input 
@@ -102,6 +106,25 @@ export default {
     },
     filterByCategory(category) {
       this.selectedCategory = category
+    },
+    downloadPosts() {
+      const postsToDownload = this.posts; // Get posts from Vuex state
+      if (!postsToDownload || postsToDownload.length === 0) {
+        alert('No posts to download.');
+        return;
+      }
+
+      const jsonData = JSON.stringify(postsToDownload, null, 2); // Pretty print JSON
+      const blob = new Blob([jsonData], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'blog-posts.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      alert('Posts downloaded as blog-posts.json');
     }
   },
   created() {
@@ -132,6 +155,27 @@ export default {
       color: $text-secondary;
       max-width: 600px;
       margin: 0 auto;
+    }
+  }
+
+  .actions-bar {
+    margin-bottom: $spacing-xl;
+    display: flex;
+    justify-content: flex-end;
+
+    .download-button {
+      padding: $spacing-sm $spacing-md;
+      background-color: $primary-color; // Or another suitable color
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: $font-size-base;
+      cursor: pointer;
+      transition: $transition-base;
+
+      &:hover {
+        background-color: darken($primary-color, 10%);
+      }
     }
   }
 
