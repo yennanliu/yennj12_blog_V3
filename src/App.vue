@@ -8,6 +8,7 @@
         <div class="nav-links">
           <router-link to="/">Home</router-link>
           <router-link to="/blog">Articles</router-link>
+          <router-link to="/create-post">Create Post</router-link>
           <router-link to="/about">About</router-link>
         </div>
       </div>
